@@ -1,0 +1,15 @@
+git clone https://github.com/charbelGassibe/opencv-yolo5.git
+
+ sudo apt-get -y update
+ sudo apt-get -y upgrade   
+ pip3 install opencv-python
+ #sudo apt-get install -y libatlas-base-dev
+ sudo apt-get install -y libopenblas-dev
+ pip3 install https://github.com/Kashu7100/pytorch-armv7l/raw/main/torch-1.7.0a0-cp37-cp37m-linux_armv7l.whl
+ pip3 install https://github.com/Kashu7100/pytorch-armv7l/raw/main/torchvision-0.8.0a0%2B45f960c-cp37-cp37m-linux_armv7l.whl
+ pip3 install tqdm
+ pip3 install pyyaml
+ pip3 install matplotlib
+ pip3 install seaborn
+
+python3 detect.py --source 0 --view-img --weights yolov5s.pt --conf 0.25
