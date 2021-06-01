@@ -1,3 +1,6 @@
+# USAGE python detect.py --source 0 --view-img --weights yolov5s.pt --conf 0.25
+
+
 import argparse
 import time
 from pathlib import Path
@@ -18,6 +21,7 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized
 def detect(opt):
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
     save_img = not opt.nosave and not source.endswith('.txt')  # save inference images
+    print("[INFO] save_img {}".format(save_img))
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
         ('rtsp://', 'rtmp://', 'http://', 'https://'))
 
@@ -109,10 +113,15 @@ def detect(opt):
 
                     if save_img or opt.save_crop or view_img:  # Add bbox to image
                         c = int(cls)  # integer class
-                        label = None if opt.hide_labels else (names[c] if opt.hide_conf else f'{names[c]} {conf:.2f}')
-                        plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
-                        if opt.save_crop:
-                            save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
+                        class_name = names[c]
+                        if class_name == 'person' or class_name == 'car':
+                            label = None if opt.hide_labels else (names[c] if opt.hide_conf else f'{class_name} {(conf*100):.0f}%')
+                            label = label.replace('person','persona').replace('car','auto')
+                            plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
+                            """
+                            if opt.save_crop:
+                                save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
+                            """
 
             # Print time (inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
@@ -123,6 +132,7 @@ def detect(opt):
                 cv2.waitKey(1)  # 1 millisecond
 
             # Save results (image with detections)
+            """
             if save_img:
                 if dataset.mode == 'image':
                     cv2.imwrite(save_path, im0)
@@ -140,6 +150,7 @@ def detect(opt):
                             save_path += '.mp4'
                         vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
                     vid_writer.write(im0)
+            """
 
     if save_txt or save_img:
         s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
