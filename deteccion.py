@@ -23,7 +23,7 @@ def object_detection():
 
     #grab frame from video file
     video = cv2.VideoCapture(0)
-    video = cv2.VideoCapture('dataset/source-1.mp4')
+    video = cv2.VideoCapture('dataset/video-2.mp4')
     frameCount = 0
 
     videoWidth = int(video.get(cv2.CAP_PROP_FRAME_WIDTH ))
@@ -92,7 +92,7 @@ def object_detection():
                             distanceFromCenter = centerWidth - center[0]
                             distanceFromCenter = distanceFromCenter if distanceFromCenter > 0 else distanceFromCenter*-1
 
-                        print("object {} has size {} percentage {} x {} center={} distanceFromCenter={}".format(className,objectSize, widthPercentage, heightPercentage, center, distanceFromCenter))
+                            print("{} {}% has size {} percentage {} x {} center={} distanceFromCenter={}".format(className,str(int(confidence*100)),objectSize, widthPercentage, heightPercentage, center, distanceFromCenter))
 
                     #print(text)
             #results.show()  # or .show()
