@@ -31,6 +31,8 @@ def object_detection():
 
     centerWidth =  int(videoWidth // 2)
 
+    print("width {} x height {}".format(videoWidth, videoHeight))
+
     while True:
         ret,frame = video.read()
 
@@ -69,13 +71,29 @@ def object_detection():
                     if className in ["person", "car"]:
                         color = (0, 255, 0)
 
-                        cv2.line(image, (centerWidth, 0), (centerWidth, videoHeight), color) 
+                        cv2.line(frame, (centerWidth, 0), (centerWidth, videoHeight), color) 
                         x1, y1, x2, y2 = int(row[0]*x_shape), int(row[1]*y_shape), int(row[2]*x_shape), int(row[3]*y_shape)
-                        cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
+
+                        objectSize = ( x2 - x1, y2 - y1)
+
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
                         className = className.replace("person", "persona").replace("car", "auto")
                         text = className + " " + str(int(confidence*100))+"%"
                         cv2.putText(image, text, (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
-                    
+                        
+                        widthPercentage = objectSize[0] * 100 / videoWidth
+                        heightPercentage = objectSize[1] * 100 / videoHeight
+
+                        SIZE_PERCENTAGE = 50
+                        if widthPercentage >= SIZE_PERCENTAGE or heightPercentage >= SIZE_PERCENTAGE:
+                            center = (objectSize[0]//2 +x1, objectSize[1]//2 +y1)
+                            cv2.circle(frame, center, 3, (0, 0, 255), -1)
+
+                            distanceFromCenter = centerWidth - center[0]
+                            distanceFromCenter = distanceFromCenter if distanceFromCenter > 0 else distanceFromCenter*-1
+
+                        print("object {} has size {} percentage {} x {} center={} distanceFromCenter={}".format(className,objectSize, widthPercentage, heightPercentage, center, distanceFromCenter))
+
                     #print(text)
             #results.show()  # or .show()
 
