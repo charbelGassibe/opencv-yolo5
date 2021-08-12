@@ -22,8 +22,8 @@ def object_detection():
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
 
     #grab frame from video file
-    video = cv2.VideoCapture(0)
-    video = cv2.VideoCapture('dataset/video-2.mp4')
+    #video = cv2.VideoCapture(0)
+    video = cv2.VideoCapture('dataset/video-4.mp4')
     frameCount = 0
 
     videoWidth = int(video.get(cv2.CAP_PROP_FRAME_WIDTH ))
@@ -39,9 +39,10 @@ def object_detection():
         if ret != True:
             break
 
-        frameRate = video.get(5)
-        print("frame rate {}".format(frameRate))
-        print("frameCount {}".format(frameCount))
+        #frameRate = video.get(5)
+        frameRate = 60
+        #print("frame rate {}".format(frameRate))
+        #print("frameCount {}".format(frameCount))
 
         frameCount += 1
         #image = cv2.imread('zidane.jpg')
@@ -59,9 +60,12 @@ def object_detection():
             print("cord: ", coordinates)
             print("model.names {}".format(model.names))
             print("objects detected {}".format(total_detected))
-
-            print("image size: {}".format(image.shape[:2]))
             """
+            print("image size: {}".format(image.shape[:2]))
+
+            texto_a_reproducir = ""
+            contador_personas = 0
+            contador_autos = 0
 
             for i in range(total_detected):
                 row = coordinates[i]
@@ -83,22 +87,57 @@ def object_detection():
                         
                         widthPercentage = objectSize[0] * 100 / videoWidth
                         heightPercentage = objectSize[1] * 100 / videoHeight
-
-                        SIZE_PERCENTAGE = 50
-                        if widthPercentage >= SIZE_PERCENTAGE or heightPercentage >= SIZE_PERCENTAGE:
+                        
+                        MIN_SIZE_PERCENTAGE = 0 
+                        MAX_SIZE_PERCENTAGE = 0
+                        if className == "persona":
+                            MAX_SIZE_PERCENTAGE = 14
+                            MIN_SIZE_PERCENTAGE = 5                        
+                        if className == "auto":
+                            MAX_SIZE_PERCENTAGE = 40
+                            MIN_SIZE_PERCENTAGE = 20
+                        
+                        if  MIN_SIZE_PERCENTAGE >= widthPercentage <= MAX_SIZE_PERCENTAGE or MIN_SIZE_PERCENTAGE >= heightPercentage <= MAX_SIZE_PERCENTAGE:
                             center = (objectSize[0]//2 +x1, objectSize[1]//2 +y1)
                             cv2.circle(frame, center, 3, (0, 0, 255), -1)
 
                             distanceFromCenter = centerWidth - center[0]
                             distanceFromCenter = distanceFromCenter if distanceFromCenter > 0 else distanceFromCenter*-1
 
+                            if className == "persona":
+                                contador_personas += 1
+                            if className == "auto":
+                                contador_autos += 1
+
                             print("{} {}% has size {} percentage {} x {} center={} distanceFromCenter={}".format(className,str(int(confidence*100)),objectSize, widthPercentage, heightPercentage, center, distanceFromCenter))
+                        #print("{} {}% has size {} percentage {} x {} ".format(className,str(int(confidence*100)),objectSize, widthPercentage, heightPercentage))
+
 
                     #print(text)
             #results.show()  # or .show()
+            
+            if contador_personas > 0:
+                if contador_personas == 1:
+                    texto_a_reproducir = texto_a_reproducir+ " {} persona".format("una")
+                else:
+                    texto_a_reproducir = texto_a_reproducir+ " {} personas".format(contador_personas)
+            
+            if contador_autos > 0:
+                if contador_autos == 1:
+                    texto_a_reproducir = texto_a_reproducir+ " {} auto".format("un")
+                else:
+                    texto_a_reproducir = texto_a_reproducir+ " {} autos".format(contador_autos)
 
-            cv2.imshow('video', frame)
-            cv2.waitKey(0)
+            print(texto_a_reproducir)
+
+            if texto_a_reproducir:
+                filename = "alerta.mp3"
+                text_to_speech(texto_a_reproducir, filename)
+                play_audio(filename)
+
+
+            #cv2.imshow('video', frame)
+            cv2.waitKey(1)
 
 #filename = 'saludo.mp3'
 #text_to_speech('Wena charbel culiao', filename)
