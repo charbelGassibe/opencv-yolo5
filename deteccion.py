@@ -19,7 +19,7 @@ def play_audio(filename):
 
 def object_detection():
     # Model
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    model = torch.hub.load('yolov5', 'custom', path='yolov5s.pt', source='local')  # local repo
 
     #grab frame from video file
     #video = cv2.VideoCapture(0)
