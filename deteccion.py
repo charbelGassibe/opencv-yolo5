@@ -136,7 +136,7 @@ def object_detection():
                 play_audio(filename)
 
 
-            #cv2.imshow('video', frame)
+            cv2.imshow('video', frame)
             cv2.waitKey(1)
 
 #filename = 'saludo.mp3'
